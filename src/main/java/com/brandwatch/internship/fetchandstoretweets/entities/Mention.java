@@ -2,12 +2,14 @@ package com.brandwatch.internship.fetchandstoretweets.entities;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.social.twitter.api.Tweet;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public class Mention {
 
-    private static final long serialVersionUID = 1L;
     private final long id;
     private final String idStr;
     private final String text;
@@ -20,7 +22,7 @@ public class Mention {
     private String source;
     private long queryId;
 
-    public Mention(long id, String idStr, String text, Date createdAt, String fromUser, String profileImageUrl,
+    private Mention(long id, String idStr, String text, Date createdAt, String fromUser, String profileImageUrl,
                    Long toUserId, long fromUserId, String languageCode, String source, long queryId) {
 
         this.id = id;
@@ -35,6 +37,21 @@ public class Mention {
         this.source = source;
         this.queryId = queryId;
     }
+
+    private static Mention tweetToMention(Tweet tweet, long queryId){
+        return new Mention(tweet.getId(), tweet.getIdStr(),tweet.getText(), tweet.getCreatedAt(), tweet.getFromUser(),
+                tweet.getProfileImageUrl(), tweet.getToUserId(), tweet.getFromUserId(), tweet.getLanguageCode(),
+                tweet.getSource(), queryId);
+    }
+
+    public static List<Mention> tweetsToMentions(List<Tweet> tweets, long queryId) {
+        List<Mention> mentions = new ArrayList<>();
+
+        tweets.forEach(tweet -> mentions.add(tweetToMention(tweet, queryId)));
+
+        return mentions;
+    }
+
 
     @Override
     public String toString() {
