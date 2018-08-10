@@ -3,16 +3,13 @@ package com.brandwatch.internship.fetchandstoretweets.entities;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import java.util.concurrent.atomic.AtomicLong;
-
 public class Query {
 
-    private static AtomicLong counter = new AtomicLong();
     private final long id;
     private final String searchString;
 
-    public Query(String searchString) {
-        this.id = counter.incrementAndGet();
+    public Query(long id, String searchString) {
+        this.id = id;
         this.searchString = searchString;
     }
 
