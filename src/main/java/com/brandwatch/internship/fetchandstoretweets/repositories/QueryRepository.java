@@ -5,4 +5,7 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 
 public interface QueryRepository extends MongoRepository<Query, Long> {
 
+    Query findFirstByOrderByIdDesc();
+
+    Query findOneById(long id);
 }
