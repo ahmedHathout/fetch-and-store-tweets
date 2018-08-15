@@ -11,11 +11,11 @@ import java.util.stream.Collectors;
 
 public class Mention {
 
-    private static class MentionId {
+    public static class MentionId {
         private long tweetId;
         private long queryId;
 
-        private MentionId(long tweetId, long queryId) {
+        public MentionId(long tweetId, long queryId) {
             this.tweetId = tweetId;
             this.queryId = queryId;
         }
@@ -40,7 +40,7 @@ public class Mention {
     private String languageCode;
     private String source;
 
-    private Mention(MentionId id, String text, Date createdAt, String fromUser, String profileImageUrl,
+    public Mention(MentionId id, String text, Date createdAt, String fromUser, String profileImageUrl,
                     Long toUserId, long fromUserId, String languageCode, String source) {
 
         this.id = id;
@@ -54,19 +54,6 @@ public class Mention {
         this.source = source;
 
     }
-
-    private static Mention tweetToMention(Tweet tweet, long queryId){
-        return new Mention(new Mention.MentionId(tweet.getId(), queryId), tweet.getText(), tweet.getCreatedAt(), tweet.getFromUser(),
-                tweet.getProfileImageUrl(), tweet.getToUserId(), tweet.getFromUserId(), tweet.getLanguageCode(),
-                tweet.getSource());
-    }
-
-    public static List<Mention> tweetsToMentions(List<Tweet> tweets, long queryId) {
-        return tweets.stream()
-                .map(tweet -> tweetToMention(tweet, queryId))
-                .collect(Collectors.toList());
-    }
-
 
     @Override
     public String toString() {
