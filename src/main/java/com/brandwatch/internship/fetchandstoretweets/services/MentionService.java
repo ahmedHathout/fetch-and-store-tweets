@@ -10,11 +10,9 @@ import org.springframework.social.twitter.api.Tweet;
 import org.springframework.social.twitter.api.Twitter;
 import org.springframework.stereotype.Service;
 
-import javax.inject.Singleton;
 import java.util.List;
 
 @Service
-@Singleton
 public class MentionService {
 
     private Twitter twitter;
@@ -39,7 +37,6 @@ public class MentionService {
             mentionsRepository.saveAll(mentions);
         }
 
-        System.out.println(mentionsRepository.findAll().size());
     }
 
     public List<Mention> getMentionsByQueryId(long queryId) {
