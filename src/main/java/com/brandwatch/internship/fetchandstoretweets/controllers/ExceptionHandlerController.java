@@ -1,9 +1,11 @@
 package com.brandwatch.internship.fetchandstoretweets.controllers;
 
 import com.brandwatch.internship.fetchandstoretweets.entities.Query;
+import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestController;
 
+@ControllerAdvice
 @RestController
 public class ExceptionHandlerController {
 
