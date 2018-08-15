@@ -1,13 +1,8 @@
 package com.brandwatch.internship.fetchandstoretweets.services;
 
 import com.brandwatch.internship.fetchandstoretweets.entities.Mention;
-import com.brandwatch.internship.fetchandstoretweets.entities.Query;
 import com.brandwatch.internship.fetchandstoretweets.repositories.MentionsRepository;
-import com.brandwatch.internship.fetchandstoretweets.repositories.QueryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.social.twitter.api.Tweet;
-import org.springframework.social.twitter.api.Twitter;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,28 +10,11 @@ import java.util.List;
 @Service
 public class MentionService {
 
-    private Twitter twitter;
     private MentionsRepository mentionsRepository;
-    private QueryRepository queryRepository;
 
     @Autowired
-    private MentionService(Twitter twitter, MentionsRepository mentionsRepository, QueryRepository queryRepository) {
-        this.twitter = twitter;
+    private MentionService(MentionsRepository mentionsRepository) {
         this.mentionsRepository = mentionsRepository;
-        this.queryRepository = queryRepository;
-    }
-
-    @Scheduled(fixedRate = 60000)
-    public void run() {
-        List<Query> queries = queryRepository.findAll();
-
-        for (Query query : queries) {
-            List<Tweet> tweets = twitter.searchOperations().search(query.getSearchString()).getTweets();
-            List<Mention> mentions = Mention.tweetsToMentions(tweets, query.getId());
-
-            mentionsRepository.saveAll(mentions);
-        }
-
     }
 
     public List<Mention> getMentionsByQueryId(long queryId) {
