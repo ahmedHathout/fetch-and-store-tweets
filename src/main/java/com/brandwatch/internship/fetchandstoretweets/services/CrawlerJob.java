@@ -8,18 +8,18 @@ import com.brandwatch.internship.fetchandstoretweets.services.utility.TweetsToMe
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.social.twitter.api.Tweet;
 import org.springframework.social.twitter.api.Twitter;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 
-@Service
-public class CrawlerService {
+@Component
+public class CrawlerJob {
 
     private final Twitter twitter;
     private final MentionsRepository mentionsRepository;
     private final QueryRepository queryRepository;
 
-    public CrawlerService(Twitter twitter, MentionsRepository mentionsRepository, QueryRepository queryRepository) {
+    public CrawlerJob(Twitter twitter, MentionsRepository mentionsRepository, QueryRepository queryRepository) {
         this.twitter = twitter;
         this.mentionsRepository = mentionsRepository;
         this.queryRepository = queryRepository;
