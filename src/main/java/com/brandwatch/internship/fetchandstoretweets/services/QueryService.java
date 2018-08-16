@@ -68,4 +68,8 @@ public class QueryService {
         return query;
     }
 
+    List<Query> findAll() {
+        return queryRepository.findAll();
+    }
+
 }
