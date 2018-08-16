@@ -7,17 +7,16 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 public class Query {
 
-    @ResponseStatus(value=HttpStatus.NOT_FOUND, reason="No such Query")  // 404
+    @ResponseStatus(value = HttpStatus.NOT_FOUND, reason="No such Query")  // 404
     public static class NoSuchQueryException extends RuntimeException {
         public long id;
 
         public NoSuchQueryException(long id) {
-            super();
             this.id = id;
         }
     }
 
-    @ResponseStatus(value=HttpStatus.BAD_REQUEST, reason="searchString can not be empty")  // 400
+    @ResponseStatus(value = HttpStatus.BAD_REQUEST, reason="searchString can not be empty")  // 400
     public static class EmptyQuerySearchStringException extends RuntimeException { }
 
 
