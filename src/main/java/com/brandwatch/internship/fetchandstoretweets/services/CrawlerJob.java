@@ -1,10 +1,6 @@
 package com.brandwatch.internship.fetchandstoretweets.services;
 
-import com.brandwatch.internship.fetchandstoretweets.entities.Mention;
 import com.brandwatch.internship.fetchandstoretweets.entities.Query;
-import com.brandwatch.internship.fetchandstoretweets.repositories.MentionsRepository;
-import com.brandwatch.internship.fetchandstoretweets.repositories.QueryRepository;
-import com.brandwatch.internship.fetchandstoretweets.services.utility.TweetsToMentions;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.social.twitter.api.Tweet;
 import org.springframework.social.twitter.api.Twitter;
@@ -16,24 +12,22 @@ import java.util.List;
 public class CrawlerJob {
 
     private final Twitter twitter;
-    private final MentionsRepository mentionsRepository;
-    private final QueryRepository queryRepository;
+    private MentionService mentionService;
+    private QueryService queryService;
 
-    public CrawlerJob(Twitter twitter, MentionsRepository mentionsRepository, QueryRepository queryRepository) {
+    public CrawlerJob(Twitter twitter, MentionService mentionService, QueryService queryService) {
         this.twitter = twitter;
-        this.mentionsRepository = mentionsRepository;
-        this.queryRepository = queryRepository;
+        this.mentionService = mentionService;
+        this.queryService = queryService;
     }
 
     @Scheduled(fixedRate = 60000)
     public void crawl() {
-        List<Query> queries = queryRepository.findAll();
+        List<Query> queries = queryService.findAll();
 
         for (Query query : queries) {
             List<Tweet> tweets = twitter.searchOperations().search(query.getSearchString()).getTweets();
-            List<Mention> mentions = TweetsToMentions.tweetsToMentions(tweets, query.getId());
-
-            mentionsRepository.saveAll(mentions);
+            mentionService.saveTweetsForQuery(tweets, query.getId());
         }
 
     }
