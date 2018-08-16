@@ -19,8 +19,7 @@ public class QueryService {
     private QueryService(QueryRepository queryRepository) {
         try {
             this.topId = new AtomicLong(queryRepository.findFirstByOrderByIdDesc().getId());
-        }
-        catch (NullPointerException e) {
+        } catch (NullPointerException e) {
             this.topId = new AtomicLong();
         }
 
@@ -35,8 +34,9 @@ public class QueryService {
     }
 
     public Query createQuery(String searchString) {
-        if (searchString.equals(""))
+        if (searchString.equals("")) {
             throw new Query.EmptyQuerySearchStringException();
+        }
 
         return queryRepository.save(new Query(topId.incrementAndGet(), searchString));
     }
@@ -44,20 +44,23 @@ public class QueryService {
     public Query getQueryById(long id) {
         Query query = queryRepository.findOneById(id);
 
-        if (query == null)
+        if (query == null) {
             throw new Query.NoSuchQueryException(id);
+        }
 
         return query;
     }
 
     public Query updateQuery(long id, String searchString) {
-        if (searchString.equals(""))
+        if (searchString.equals("")) {
             throw new Query.EmptyQuerySearchStringException();
+        }
 
         Query query = queryRepository.findOneById(id);
 
-        if (query == null)
+        if (query == null) {
             throw new Query.NoSuchQueryException(id);
+        }
 
         query.setSearchString(searchString);
         queryRepository.save(query);
