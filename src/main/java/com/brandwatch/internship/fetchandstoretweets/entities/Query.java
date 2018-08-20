@@ -2,17 +2,29 @@ package com.brandwatch.internship.fetchandstoretweets.entities;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
-import java.util.concurrent.atomic.AtomicLong;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
 public class Query {
 
-    private static AtomicLong counter = new AtomicLong();
-    private final long id;
-    private final String searchString;
+    @ResponseStatus(value = HttpStatus.NOT_FOUND, reason="No such Query")  // 404
+    public static class NoSuchQueryException extends RuntimeException {
+        public long id;
 
-    public Query(String searchString) {
-        this.id = counter.incrementAndGet();
+        public NoSuchQueryException(long id) {
+            this.id = id;
+        }
+    }
+
+    @ResponseStatus(value = HttpStatus.BAD_REQUEST, reason="searchString can not be empty")  // 400
+    public static class EmptyQuerySearchStringException extends RuntimeException { }
+
+
+    private final long id;
+    private String searchString;
+
+    public Query(long id, String searchString) {
+        this.id = id;
         this.searchString = searchString;
     }
 
@@ -22,6 +34,10 @@ public class Query {
 
     public String getSearchString() {
         return searchString;
+    }
+
+    public void setSearchString(String searchString) {
+        this.searchString = searchString;
     }
 
     @Override
