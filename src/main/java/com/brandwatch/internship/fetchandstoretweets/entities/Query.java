@@ -41,6 +41,15 @@ public class Query {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof Query)) {
+            return false;
+        }
+
+        return ((Query) o).id == this.id && ((Query) o).searchString.equals(this.searchString);
+    }
+
+    @Override
     public String toString() {
         try {
             return new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(this);
