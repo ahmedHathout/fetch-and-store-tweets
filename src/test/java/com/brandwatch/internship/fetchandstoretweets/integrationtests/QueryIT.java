@@ -36,11 +36,7 @@ public class QueryIT {
 
     @Test
     public void getQueryByIdTest() {
-        try {
-            assertEquals(queryController.getQueryById(QUERY_ID), queryRepository.findOneById(QUERY_ID));
-        } catch (NullPointerException e) {
-            assertNull(queryRepository.findOneById(QUERY_ID));
-        }
+        assertEquals(queryController.getQueryById(QUERY_ID), queryRepository.findOneById(QUERY_ID));
     }
 
     @Test
