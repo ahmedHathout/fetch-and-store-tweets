@@ -5,6 +5,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
+import java.util.Objects;
+
 public class Query {
 
     @ResponseStatus(value = HttpStatus.NOT_FOUND, reason="No such Query")  // 404
@@ -28,25 +30,19 @@ public class Query {
         this.searchString = searchString;
     }
 
-    public long getId() {
-        return id;
-    }
-
-    public String getSearchString() {
-        return searchString;
-    }
-
-    public void setSearchString(String searchString) {
-        this.searchString = searchString;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Query query = (Query) o;
+        return id == query.id &&
+                Objects.equals(searchString, query.searchString);
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (!(o instanceof Query)) {
-            return false;
-        }
+    public int hashCode() {
 
-        return ((Query) o).id == this.id && ((Query) o).searchString.equals(this.searchString);
+        return Objects.hash(id, searchString);
     }
 
     @Override
@@ -58,5 +54,17 @@ public class Query {
         }
 
         return "";
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public String getSearchString() {
+        return searchString;
+    }
+
+    public void setSearchString(String searchString) {
+        this.searchString = searchString;
     }
 }
