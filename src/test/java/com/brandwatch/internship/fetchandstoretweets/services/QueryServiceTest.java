@@ -7,19 +7,15 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
-@RunWith(SpringRunner.class)
-@SpringBootTest
-@TestPropertySource(locations="classpath:test.properties")
+@RunWith(MockitoJUnitRunner.class)
 public class QueryServiceTest {
 
+    private static final long QUERY_ID = 2;
     private static final String EMPTY_SEARCH_STRING = "";
 
     @Mock
@@ -45,11 +41,11 @@ public class QueryServiceTest {
 
     @Test(expected = Query.EmptyQuerySearchStringException.class)
     public void updateQueryWithEmptyStringExceptionTest() {
-        queryService.updateQuery(anyLong(), EMPTY_SEARCH_STRING);
+        queryService.updateQuery(QUERY_ID, EMPTY_SEARCH_STRING);
     }
 
     @Test(expected = Query.NoSuchQueryException.class)
     public void updateNonExistingQueryExceptionTest() {
-        queryService.updateQuery(anyLong(), "Any valid searchString");
+        queryService.updateQuery(QUERY_ID, "Any valid searchString");
     }
 }
