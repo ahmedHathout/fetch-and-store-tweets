@@ -29,7 +29,7 @@ public class MentionService {
 
     private static Mention tweetToMention(Tweet tweet, long queryId){
         return new Mention(new Mention.MentionId(tweet.getId(), queryId), tweet.getText(), tweet.getCreatedAt(), tweet.getFromUser(),
-                tweet.getProfileImageUrl(), tweet.getToUserId(), tweet.getFromUserId(), tweet.getLanguageCode(),
+                tweet.getProfileImageUrl(), tweet.getLanguageCode(),
                 tweet.getSource());
     }
 
