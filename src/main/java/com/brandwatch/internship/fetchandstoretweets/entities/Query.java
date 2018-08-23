@@ -1,5 +1,6 @@
 package com.brandwatch.internship.fetchandstoretweets.entities;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.http.HttpStatus;
@@ -25,7 +26,10 @@ public class Query {
     private final long id;
     private String searchString;
 
-    public Query(long id, String searchString) {
+    public Query(
+            @JsonProperty("id") long id,
+            @JsonProperty("searchString") String searchString) {
+
         this.id = id;
         this.searchString = searchString;
     }
