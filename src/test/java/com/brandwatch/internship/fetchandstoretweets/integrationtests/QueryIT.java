@@ -1,62 +1,108 @@
 package com.brandwatch.internship.fetchandstoretweets.integrationtests;
 
-import com.brandwatch.internship.fetchandstoretweets.controllers.QueryController;
 import com.brandwatch.internship.fetchandstoretweets.entities.Query;
+import com.brandwatch.internship.fetchandstoretweets.integrationtests.utility.UrlCreator;
 import com.brandwatch.internship.fetchandstoretweets.repositories.QueryRepository;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.io.IOException;
+import java.util.List;
+
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @TestPropertySource(locations="classpath:test.properties")
 public class QueryIT {
 
     private static final long QUERY_ID = 3;
-    private static final String SEARCH_STRING = "test";
+    private static final String BASE_URI = "/queries";
 
-    @Autowired
-    private QueryController queryController;
+    @LocalServerPort
+    private int port;
 
     @Autowired
     private QueryRepository queryRepository;
 
+    @Autowired
+    private ObjectMapper mapper;
+
+    private UrlCreator urlCreator;
+    private TestRestTemplate restTemplate = new TestRestTemplate();
+
+    @Before
+    public void setUp() {
+        urlCreator = new UrlCreator(restTemplate, BASE_URI, port);
+        restTemplate.getRestTemplate().setRequestFactory(
+                new HttpComponentsClientHttpRequestFactory(HttpClientBuilder.create().build()));
+    }
 
     @Test
-    public void getAllQueriesTest() {
-        assertEquals(queryController.getAllQueries(), queryRepository.findAll());
+    public void getAllQueriesTest() throws IOException {
+        final String uri = "/";
+
+        String responseBody = restTemplate.getForObject(urlCreator.createURLWithPort(uri), String.class);
+
+        List<Query> actualQueries = mapper.readValue(responseBody, new TypeReference<List<Query>>() {});
+        List<Query> expectedQueries = queryRepository.findAll();
+
+        assertEquals(actualQueries, expectedQueries);
     }
 
     @Test
     public void getQueryByIdTest() {
-        assertEquals(queryController.getQueryById(QUERY_ID), queryRepository.findOneById(QUERY_ID));
+        final String uri = "/" + QUERY_ID;
+
+        Query actualQuery = restTemplate.getForObject(urlCreator.createURLWithPort(uri), Query.class);
+        Query expectedQuery = queryRepository.findOneById(QUERY_ID);
+
+        assertEquals(actualQuery, expectedQuery);
     }
 
     @Test
-    public void createQueryTest() {
-        long newQueryId = queryController.createQuery(SEARCH_STRING).getId();
+    public void createQueryTest() throws IOException {
+        final String uri = "/";
+        final String requestBody = "searchString=test";
 
-        Query query = queryRepository.findOneById(newQueryId);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
-        assertNotNull(query);
-        queryRepository.delete(query);
+        HttpEntity<String> request = new HttpEntity<>(requestBody, headers);
+        String responseBody = restTemplate.postForObject(urlCreator.createURLWithPort(uri), request, String.class);
+        Query actualQuery = mapper.readValue(responseBody, Query.class);
+        Query expectedQuery = queryRepository.findOneById(actualQuery.getId());
+
+        assertEquals(expectedQuery, actualQuery);
+        queryRepository.delete(actualQuery);
     }
 
     @Test
-    public void updateQueryTest() {
-        String newSearchString = "new test";
-        long newQueryId = queryController.createQuery(SEARCH_STRING).getId();
+    public void updateQueryTest() throws IOException {
+        final String uri = "/" + QUERY_ID;
+        final String expectedString = "new test";
+        final String requestBody = "searchString=" + expectedString.replaceAll(" ", "%20");
 
-        queryController.updateQuery(newQueryId, newSearchString);
-
-        assertEquals(queryRepository.findOneById(newQueryId).getSearchString(), newSearchString);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+        HttpEntity<String> request = new HttpEntity<>(requestBody, headers);
+        String responseBody = restTemplate.patchForObject(urlCreator.createURLWithPort(uri), request, String.class);
+        String actualSearchString = mapper.readValue(responseBody, Query.class).getSearchString();
+        assertEquals(expectedString, actualSearchString);
     }
 
 }
