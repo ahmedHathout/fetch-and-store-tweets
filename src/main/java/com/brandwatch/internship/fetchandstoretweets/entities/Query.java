@@ -1,9 +1,12 @@
 package com.brandwatch.internship.fetchandstoretweets.entities;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
+
+import java.util.Objects;
 
 public class Query {
 
@@ -23,9 +26,38 @@ public class Query {
     private final long id;
     private String searchString;
 
-    public Query(long id, String searchString) {
+    public Query(
+            @JsonProperty("id") long id,
+            @JsonProperty("searchString") String searchString) {
+
         this.id = id;
         this.searchString = searchString;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Query query = (Query) o;
+        return id == query.id &&
+                Objects.equals(searchString, query.searchString);
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(id, searchString);
+    }
+
+    @Override
+    public String toString() {
+        try {
+            return new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(this);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+
+        return "";
     }
 
     public long getId() {
@@ -38,16 +70,5 @@ public class Query {
 
     public void setSearchString(String searchString) {
         this.searchString = searchString;
-    }
-
-    @Override
-    public String toString() {
-        try {
-            return new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(this);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
-
-        return "";
     }
 }

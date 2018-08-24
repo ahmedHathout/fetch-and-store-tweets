@@ -22,7 +22,7 @@ public class QueryController {
     }
 
     @GetMapping(value = "/{id}")
-    public Query getQuerById(@PathVariable("id") long id) {
+    public Query getQueryById(@PathVariable("id") long id) {
         return queryService.getQueryById(id);
     }
 
