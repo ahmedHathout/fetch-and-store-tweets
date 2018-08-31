@@ -1,5 +1,6 @@
 package com.brandwatch.ahmedanalytics.api.integrationtests;
 
+import com.brandwatch.ahmedanalytics.ApiApplication;
 import com.brandwatch.ahmedanalytics.api.integrationtests.utility.UrlCreator;
 import com.brandwatch.ahmedanalytics.common.entities.Mention;
 import com.brandwatch.ahmedanalytics.common.repositories.MentionsRepository;
@@ -21,7 +22,9 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
+        classes = {ApiApplication.class, TestConfig.class})
+
 @TestPropertySource(locations="classpath:test.properties")
 public class MentionIT {
 
