@@ -24,8 +24,8 @@ public class DBManager {
     private MentionsRepository mentionsRepository;
 
     public void populateDB() throws IOException {
-        List<Query> queries = mapper.readValue(new File("src/test/java/com/brandwatch/ahmedanalytics/api/integrationtests/utility/querytestdata.json"), new TypeReference<List<Query>>(){});
-        List<Mention> mentions = mapper.readValue(new File("src/test/java/com/brandwatch/ahmedanalytics/api/integrationtests/utility/mentiontestdata.json"), new TypeReference<List<Mention>>(){});
+        List<Query> queries = mapper.readValue(new File("src/test/resources/testdata/querytestdata.json"), new TypeReference<List<Query>>(){});
+        List<Mention> mentions = mapper.readValue(new File("src/test/resources/testdata/mentiontestdata.json"), new TypeReference<List<Mention>>(){});
 
         queryRepository.saveAll(queries);
         mentionsRepository.saveAll(mentions);
