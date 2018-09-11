@@ -1,5 +1,6 @@
 package com.brandwatch.ahmedanalytics.storage;
 
+import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,18 +15,18 @@ public class Config {
     @Bean
     public KafkaConsumer<String, String> mentionConsumer() {
         Properties props = new Properties();
-        props.put("bootstrap.servers", "kafka:9092");
-        props.put("group.id", "storage-consumer");
-        props.put("enable.auto.commit", "true");
-        props.put("auto.commit.interval.ms", "1000");
-        props.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
-        props.put("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
+        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "kafka:9092");
+        props.put(ConsumerConfig.GROUP_ID_CONFIG, "storage-consumer");
+        props.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "true");
+        props.put(ConsumerConfig.AUTO_COMMIT_INTERVAL_MS_CONFIG, "1000");
+        props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringDeserializer");
+        props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringDeserializer");
 
         return new KafkaConsumer<>(props);
     }
 
     @Bean(initMethod = "run", destroyMethod = "shutdown")
-    public ConsumerThread consumerThread() {
-        return new ConsumerThread(mentionConsumer());
+    public StorageJob consumerThread() {
+        return new StorageJob(mentionConsumer());
     }
 }
