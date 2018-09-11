@@ -1,11 +1,9 @@
-@@ -0,0 +1,60 @@
 version: "3"
 services:
 
   api:
     build: ./api
     container_name: api
-    restart: always
     depends_on:
       - kafka
       - mongodb
@@ -16,18 +14,18 @@ services:
   crawler:
     build: ./crawler
     container_name: crawler
-    restart: always
-    environment:
-      WAIT_HOSTS: kafka:9092,mongodb:27017
+    depends_on:
+      - mongodb
+      - kafka
     ports:
       - 8081:8081
 
   storage:
     build: ./storage
     container_name: storage
-    restart: always
-    environment:
-      WAIT_HOSTS: kafka:9092,mongodb:27071
+    depends_on:
+      - mongodb
+      - kafka
 
   mongodb:
     image: mongo
