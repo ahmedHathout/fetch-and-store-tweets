@@ -20,13 +20,13 @@ public class CrawlerJob {
     private static final ObjectMapper mapper = new ObjectMapper();
 
     private final Twitter twitter;
-    private final Producer<String, String> producer;
+    private final Producer<String, String> mentionProducer;
 
     private QueryService queryService;
 
     public CrawlerJob(Twitter twitter, Producer<String, String> producer, QueryService queryService) {
         this.twitter = twitter;
-        this.producer = producer;
+        this.mentionProducer = producer;
         this.queryService = queryService;
     }
 
@@ -39,7 +39,7 @@ public class CrawlerJob {
 
             mentions.forEach(mention -> {
                 try {
-                    producer.send(new ProducerRecord<>("mention",
+                    mentionProducer.send(new ProducerRecord<>("mention",
                             mapper.writeValueAsString(mention)));
                 } catch (JsonProcessingException e) {
                     e.printStackTrace();
