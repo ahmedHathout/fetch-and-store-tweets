@@ -2,46 +2,44 @@ package com.brandwatch.ahmedanalytics.storage;
 
 import com.brandwatch.ahmedanalytics.common.entities.Mention;
 import com.brandwatch.ahmedanalytics.common.repositories.MentionsRepository;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.errors.WakeupException;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.io.IOException;
 import java.util.Collections;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.logging.Logger;
 
-public class StorageJob extends Thread{
+public class StorageConsumerRunnable implements Runnable{
 
-    private static final ObjectMapper mapper = new ObjectMapper();
+    private static final org.slf4j.Logger logger = LoggerFactory.getLogger(StorageConsumerRunnable.class);
 
     private final AtomicBoolean closed = new AtomicBoolean(false);
-    private final KafkaConsumer<String, String> mentionConsumer;
+    private final KafkaConsumer<String, Mention> mentionConsumer;
 
     @Autowired
     private MentionsRepository mentionsRepository;
 
-    public StorageJob(KafkaConsumer<String, String> mentionConsumer) {
+    public StorageConsumerRunnable(KafkaConsumer<String, Mention> mentionConsumer) {
         this.mentionConsumer = mentionConsumer;
-        this.mentionConsumer.subscribe(Collections.singletonList("mention"));
     }
 
     @Override
     public void run() {
+        this.mentionConsumer.subscribe(Collections.singletonList("mention"));
 
         try {
             //noinspection InfiniteLoopStatement
             while (true) {
-                ConsumerRecords<String, String> records = mentionConsumer.poll(1000);
+                ConsumerRecords<String, Mention> records = mentionConsumer.poll(1000);
 
-                try {
-                    for (ConsumerRecord<String, String> record : records) {
-                        mentionsRepository.save(mapper.readValue(record.value(), Mention.class));
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
+                for (ConsumerRecord<String, Mention> record : records) {
+                    mentionsRepository.save(record.value());
                 }
             }
         } catch (WakeupException e) {
@@ -56,5 +54,10 @@ public class StorageJob extends Thread{
     public void shutdown() {
         closed.set(true);
         mentionConsumer.wakeup();
+    }
+
+    public void start() {
+        ExecutorService executorService = Executors.newFixedThreadPool(1);
+        executorService.submit(this);
     }
 }
