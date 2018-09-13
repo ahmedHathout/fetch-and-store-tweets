@@ -9,7 +9,8 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>crawler</artifactId>
+    <artifactId>storage</artifactId>
+
     <build>
         <plugins>
             <plugin>
@@ -29,12 +30,6 @@
     </build>
 
     <dependencies>
-        <dependency>
-            <groupId>org.springframework.social</groupId>
-            <artifactId>spring-social-twitter</artifactId>
-            <version>1.1.2.RELEASE</version>
-        </dependency>
-
         <dependency>
             <groupId>com.brandwatch.ahmedanalytics</groupId>
             <version>0.0.1-SNAPSHOT</version>
@@ -59,4 +54,5 @@
             <version>LATEST</version>
         </dependency>
     </dependencies>
+
 </project>
