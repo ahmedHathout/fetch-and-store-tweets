@@ -44,11 +44,11 @@ public class CrawlerJob {
             List<Tweet> tweets = twitter.searchOperations().search(query.getSearchString()).getTweets();
             List<Mention> mentions = tweetsToMentions(tweets, query.getId());
 
-            logger.debug(String.format("Found %d mentions", mentions.size()));
+            logger.debug("Found {} mentions for query {}", mentions.size(), query.getId());
 
             mentions.forEach(mention -> producer.send(new ProducerRecord<>(TOPIC_NAME, mention)));
         }
-        logger.info(String.format("Finished crawling in %d ms.", System.currentTimeMillis() - startTime));
+        logger.info("Finished crawling in {} ms", System.currentTimeMillis() - startTime);
     }
 
     private static Mention tweetToMention(Tweet tweet, long queryId){

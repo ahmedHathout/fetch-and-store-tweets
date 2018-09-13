@@ -28,13 +28,13 @@ public class StorageConsumerRunnable implements Runnable{
 
     public StorageConsumerRunnable(KafkaConsumer<String, Mention> mentionConsumer) {
         this.mentionConsumer = mentionConsumer;
-        logger.info("StorageConsumerRunnable Created.");
+        logger.info("StorageConsumerRunnable Created");
     }
 
     @Override
     public void run() {
         this.mentionConsumer.subscribe(Collections.singletonList(TOPIC_NAME));
-        logger.info(String.format("Subscribed to %s", TOPIC_NAME));
+        logger.info("Subscribed to {}", TOPIC_NAME);
 
         try {
             //noinspection InfiniteLoopStatement
@@ -46,7 +46,7 @@ public class StorageConsumerRunnable implements Runnable{
                 }
 
                 if (!records.isEmpty()) {
-                    logger.debug(String.format("%d records found and saved.", records.count()));
+                    logger.debug("{} records found and saved.", records.count());
                 }
             }
         } catch (WakeupException e) {
@@ -55,7 +55,7 @@ public class StorageConsumerRunnable implements Runnable{
             }
         } finally {
             mentionConsumer.close();
-            logger.info("mentionConsumer closed.");
+            logger.info("mentionConsumer closed");
         }
     }
 
@@ -66,8 +66,8 @@ public class StorageConsumerRunnable implements Runnable{
     }
 
     public void start() {
-        ExecutorService executorService = Executors.newFixedThreadPool(1);
+        ExecutorService executorService = Executors.newSingleThreadExecutor();
         executorService.submit(this);
-        logger.info("New consumer thread started.");
+        logger.info("New consumer thread submitted for execution");
     }
 }

@@ -20,8 +20,8 @@ public class Config {
         return new ObjectMapper();
     }
 
-    @Bean
-    public KafkaConsumer<String, Mention> mentionConsumer(@Value("${spring.kafka.producer.bootstrap-servers}") String bootstrapServers) {
+    private KafkaConsumer<String, Mention> mentionConsumer(@Value("${spring.kafka.producer.bootstrap-servers}") String bootstrapServers,
+                                                           ObjectMapper objectMapper) {
         Properties props = new Properties();
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
         props.put(ConsumerConfig.GROUP_ID_CONFIG, "storage-consumer");
@@ -30,11 +30,12 @@ public class Config {
         props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class);
 
-        return new KafkaConsumer<>(props, new StringDeserializer(), new JsonDeserializer<>(Mention.class, objectMapper()));
+        return new KafkaConsumer<>(props, new StringDeserializer(), new JsonDeserializer<>(Mention.class, objectMapper));
     }
 
     @Bean(initMethod = "start", destroyMethod = "shutdown")
-    public  StorageConsumerRunnable consumerThread(@Value("${spring.kafka.producer.bootstrap-servers}") String bootstrapServers) {
-        return new StorageConsumerRunnable(mentionConsumer(bootstrapServers));
+    public  StorageConsumerRunnable consumerThread(@Value("${spring.kafka.producer.bootstrap-servers}") String bootstrapServers,
+                                                   ObjectMapper objectMapper) {
+        return new StorageConsumerRunnable(mentionConsumer(bootstrapServers, objectMapper));
     }
 }
